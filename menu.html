@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Menu de Bebidas — Al Dar Restaurante</title>
+  <meta name="theme-color" content="#08101C" />
+  <link rel="icon" type="image/jpeg" href="assets/logo.jpg" />
+  <link rel="apple-touch-icon" href="assets/logo.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --azul-profundo: #08101C;
+      --azul-ardosia: #536480;
+      --branco-neve: #F5F7F8;
+      --cinza-gelo: #C8D0D8;
+      --dourado: #C6A96B;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--azul-profundo);
+      color: var(--branco-neve);
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: rgba(8, 16, 28, 0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(198, 169, 107, 0.25);
+    }
+
+    .topbar__back {
+      color: var(--dourado);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 6px 10px;
+      border-radius: 999px;
+      transition: background 180ms ease;
+    }
+
+    .topbar__back:hover,
+    .topbar__back:focus-visible {
+      background: rgba(198, 169, 107, 0.15);
+      outline: none;
+    }
+
+    .topbar__title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-weight: 600;
+      font-size: 18px;
+      letter-spacing: 0.04em;
+      flex: 1;
+      text-align: center;
+      padding-right: 60px; /* visually balance the back button */
+    }
+
+    #viewer {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px 12px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    #viewer canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 6px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      background: #fff;
+    }
+
+    .state {
+      text-align: center;
+      padding: 80px 24px;
+      color: var(--cinza-gelo);
+      font-size: 14px;
+      letter-spacing: 0.04em;
+    }
+
+    .state .spinner {
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border: 2px solid rgba(198, 169, 107, 0.25);
+      border-top-color: var(--dourado);
+      border-radius: 50%;
+      margin-bottom: 16px;
+      animation: spin 800ms linear infinite;
+    }
+
+    .state__fallback {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: var(--branco-neve);
+      color: var(--azul-profundo);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .state .spinner { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="topbar__back" href="index.html" aria-label="Voltar à página inicial">← Voltar</a>
+    <h1 class="topbar__title">Menu de Bebidas</h1>
+  </header>
+
+  <main id="viewer" aria-busy="true">
+    <p class="state" id="state">
+      <span class="spinner" aria-hidden="true"></span><br />
+      Carregando menu…
+    </p>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    (function () {
+      const PDF_URL = 'assets/menu.pdf';
+      const viewer = document.getElementById('viewer');
+      const stateEl = document.getElementById('state');
+
+      if (!window.pdfjsLib) {
+        showFallback('Não foi possível carregar o visualizador.');
+        return;
+      }
+
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+      function showFallback(message) {
+        viewer.setAttribute('aria-busy', 'false');
+        viewer.innerHTML =
+          '<p class="state">' +
+          (message || 'Não foi possível abrir o menu aqui.') +
+          '<br /><a class="state__fallback" href="' + PDF_URL + '" target="_blank" rel="noopener">Abrir PDF</a></p>';
+      }
+
+      async function renderPage(pdf, pageNumber) {
+        const page = await pdf.getPage(pageNumber);
+        const baseViewport = page.getViewport({ scale: 1 });
+        const containerWidth = Math.min(viewer.clientWidth - 24, 900);
+        const dpr = window.devicePixelRatio || 1;
+        const cssScale = containerWidth / baseViewport.width;
+        const renderScale = cssScale * dpr;
+        const viewport = page.getViewport({ scale: renderScale });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        canvas.style.width = (baseViewport.width * cssScale) + 'px';
+        canvas.style.height = (baseViewport.height * cssScale) + 'px';
+        viewer.appendChild(canvas);
+
+        await page.render({
+          canvasContext: canvas.getContext('2d'),
+          viewport: viewport,
+        }).promise;
+      }
+
+      pdfjsLib
+        .getDocument(PDF_URL)
+        .promise.then(async function (pdf) {
+          stateEl && stateEl.remove();
+          for (let i = 1; i <= pdf.numPages; i++) {
+            try {
+              await renderPage(pdf, i);
+            } catch (err) {
+              console.error('Failed to render page', i, err);
+            }
+          }
+          viewer.setAttribute('aria-busy', 'false');
+        })
+        .catch(function (err) {
+          console.error('PDF load failed', err);
+          showFallback('Não foi possível abrir o menu aqui.');
+        });
+    })();
+  </script>
+</body>
+</html>
