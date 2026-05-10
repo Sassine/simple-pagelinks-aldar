@@ -8,6 +8,8 @@
   <link rel="icon" type="image/jpeg" href="assets/logo.jpg" />
   <link rel="apple-touch-icon" href="assets/logo.jpg" />
 
+  <script src="assets/ga4.js"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
@@ -202,10 +204,16 @@
             }
           }
           viewer.setAttribute('aria-busy', 'false');
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'menu_view_complete', { pages: pdf.numPages });
+          }
         })
         .catch(function (err) {
           console.error('PDF load failed', err);
           showFallback('Não foi possível abrir o menu aqui.');
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'menu_view_failed');
+          }
         });
     })();
   </script>
