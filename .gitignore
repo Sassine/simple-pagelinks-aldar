@@ -14,3 +14,11 @@ Thumbs.db
 # Editors
 .vscode/
 .idea/
+
+# Node (projeto é estático; evita commit acidental de dependências)
+node_modules/
+package.json
+package-lock.json
+
+# Screenshots / arquivos temporários
+_shot_*.png

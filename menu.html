@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Menu de Bebidas — Al Dar Restaurante</title>
-  <meta name="theme-color" content="#08101C" />
+  <meta name="theme-color" content="#1A0509" />
   <link rel="icon" type="image/jpeg" href="assets/logo.jpg" />
   <link rel="apple-touch-icon" href="assets/logo.jpg" />
 
@@ -15,12 +15,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
 
   <style>
+    /* Tema Dia dos Namorados — ver index.html. Originais: azul-profundo #08101C ·
+       azul-ardosia #536480 · cinza-gelo #C8D0D8 · dourado #C6A96B */
     :root {
-      --azul-profundo: #08101C;
-      --azul-ardosia: #536480;
+      --azul-profundo: #1A0509;
+      --azul-ardosia: #9B4A56;
       --branco-neve: #F5F7F8;
-      --cinza-gelo: #C8D0D8;
-      --dourado: #C6A96B;
+      --cinza-gelo: #E7CDD2;
+      --dourado: #D4B47A;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,7 +31,14 @@
 
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--azul-profundo);
+      background-color: var(--azul-profundo);
+      background-image:
+        radial-gradient(ellipse 90% 50% at center 35%, rgba(15, 3, 7, 0.55), transparent 72%),
+        url('assets/background.png');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center top;
+      background-attachment: fixed;
       color: var(--branco-neve);
       min-height: 100dvh;
       -webkit-font-smoothing: antialiased;
@@ -44,7 +53,7 @@
       align-items: center;
       gap: 12px;
       padding: 14px 18px;
-      background: rgba(8, 16, 28, 0.92);
+      background: rgba(26, 5, 9, 0.92);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       border-bottom: 1px solid rgba(198, 169, 107, 0.25);
